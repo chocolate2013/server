@@ -16,6 +16,7 @@ class Tag(models.Model):
 		return '%s' % self.tag
 
 class Lugar(models.Model):
+	usuario = models.ForeignKey(User, related_name='lugares')
 	coordenada = models.PointField()
 	nome = models.TextField()
 	descricao = models.TextField()
