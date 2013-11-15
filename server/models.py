@@ -46,6 +46,6 @@ class Comentario(models.Model):
 	datahora = models.DateTimeField()
 
 class Amizade(models.Model):
-	usuario = models.ForeignKey(User)
-	amigo = models.ForeignKey(User, related_name='amigos')
+	usuario = models.ForeignKey(User, related_name='amigos')
+	amigo = models.ForeignKey(User)
 	aprovada = models.BooleanField()

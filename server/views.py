@@ -13,6 +13,7 @@ from django.http import HttpResponse
 from server.models import *
 from django.contrib.auth.models import User
 from rest_framework.views import APIView
+import datetime
 
 @api_view(('GET',))
 def deslogar(request, format=None):
@@ -88,26 +89,49 @@ class BuscaLugar(APIView):
 
 	def post(self, request, format=None):
 		if request.DATA.contains_key("coordenada"):
-			lat = float(request.DATA["coordenada"]["lat"])
-			lon = float(request.DATA["coordenada"]["lon"])
-			queryset = Lugar.objects.filter()
+			lat = float(request.DATA["coordenada"][0])
+			lon = float(request.DATA["coordenada"][1])
+			ponto = fromstr("POINT({0} {1})".format(lat, lon))
+			queryset = Lugar.objects.filter(coordenada__distance_lte=(ponto, 5000))
 		else if request.DATA.contains_key("nome"):
-			queryset = Lugar.objects.filter()
+			queryset = Lugar.objects.filter(nome__contains=request.DATA["nome"])
 		else if request.DATA.contains_key("tag"):
-			queryset = Lugar.objects.filter(tag=request.DATA["tag"])
+			queryset = Lugar.objects.filter(tag__contains=request.DATA["tag"])
+		else
+			return Response({"detail": "Incorrect request."})
 
 		return Response(queryset)
 
-# @api_view(('POST',))
-# @authentication_classes((authentication.TokenAuthentication,))
-# def buscaLugar(request, format=None):
-# 	# if request.DATA.contains_key('coordenada'):
-# 	# 	queryset = Lugar.objects.filter()
-# 	# else if request.DATA.contains_key('nome'):
-# 	# 	queryset = Lugar.objects.filter()
-# 	# else if request.DATA.contains_key('tag'):
-# 	# 	queryset = Lugar.objects.filter()
-# 	# else
-# 	# 	return HttpResponse(status=400)
 
-# 	return HttpResponse(status=200)
+class BuscaUsuario(APIView):
+	authentication_classes = (authentication.TokenAuthentication,)
+
+	def post(self, request, format=None):
+		queryset = User.objects.filter(username__contains=request.DATA["username"])
+		return Response(queryset)
+
+
+class AdicionarAmigo(APIView):
+	authentication_classes = (authentication.TokenAuthentication,)
+
+	def post(self, request, format=None):
+		user = request.user
+		amigos = [amigo.username for amigo in user.amigos]
+
+		if username not in amigos:
+			adicionado = User.objects.get(username=username)
+			novo_amigo = Amizade(usuario=user, amigo=adicionado, aprovada=false)
+			novo_amigo.save()
+
+			notificacao = Notificacao(usuario=adicionado, tipo="A", usuarios=[user], datahora=datetime.datetime, lida=false)
+			notificacao.save()
+		else:
+			outra_pessoa = User.objects.get(username=username)
+			amizade = Amizade.objects.get(usuario=user, amigo=outra_pessoa)
+			amizade.aprovada = true
+			amizade.save()
+
+			amizade_reciproca = Amizade(usuario=outra_pessoa, amigo=user, aprovada=true)
+			amizade_reciproca.save()
+
+		return HttpResponse(status=200)
