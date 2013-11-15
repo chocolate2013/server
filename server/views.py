@@ -21,7 +21,6 @@ def deslogar(request, format=None):
 	return Response({"logoff": 1})
 
 
-
 class CriaListaUsuario(APIView):
 	authentication_classes = (authentication.TokenAuthentication,)
 
