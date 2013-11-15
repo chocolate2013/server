@@ -98,7 +98,8 @@ class BuscaLugar(APIView):
 		else:
 			return Response({"detail": "Incorrect request."})
 
-		return Response(queryset)
+		lugares = [LugarSerializer(lugar) for lugar in queryset]
+		return Response(lugares)
 
 
 class BuscaUsuario(APIView):
