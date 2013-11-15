@@ -32,7 +32,6 @@ class CriaListaUsuario(APIView):
 		return HttpResponse(status=403)
 
 	def post(self, request, format=None):
-		print request.DATA
 		novo_user = User.objects.create_user(username=request.DATA["username"], password=request.DATA["password"], first_name=request.DATA["nome"])
 		login(novo_user)
 		return HttpResponse(status=200)
@@ -93,11 +92,11 @@ class BuscaLugar(APIView):
 			lon = float(request.DATA["coordenada"][1])
 			ponto = fromstr("POINT({0} {1})".format(lat, lon))
 			queryset = Lugar.objects.filter(coordenada__distance_lte=(ponto, 5000))
-		else if request.DATA.contains_key("nome"):
-			queryset = Lugar.objects.filter(nome__contains=request.DATA["nome"])
-		else if request.DATA.contains_key("tag"):
+		elif request.DATA.contains_key("nome"):
+			queryset = Lugar.objects.filter(nome__icontains=request.DATA["nome"])
+		elif request.DATA.contains_key("tag"):
 			queryset = Lugar.objects.filter(tag__contains=request.DATA["tag"])
-		else
+		else:
 			return Response({"detail": "Incorrect request."})
 
 		return Response(queryset)

@@ -21,7 +21,7 @@ urlpatterns = patterns('',
     url(r'^u/$', views.CriaListaUsuario.as_view()),
     url(r'^u/(?P<username>.+)/$', views.PerfilUsuario.as_view()),
     url(r'^u/(?P<username>.+)/notificacoes/$', views.ListaNotificacoes.as_view()),
-    url(r'^u/(?P<username>\w+)/adicionar/$'. views.AdicionarAmigo.as_view()),
+    url(r'^u/(?P<username>\w+)/adicionar/$', views.AdicionarAmigo.as_view()),
     url(r'^u/busca/$', views.BuscaUsuario.as_view()),
     url(r'^admin/', include(admin.site.urls)),
 )
