@@ -86,14 +86,14 @@ class BuscaLugar(APIView):
 	authentication_classes = (authentication.TokenAuthentication,)
 
 	def post(self, request, format=None):
-		if request.DATA.contains_key("coordenada"):
+		if "coordenada" in request.DATA:
 			lat = float(request.DATA["coordenada"][0])
 			lon = float(request.DATA["coordenada"][1])
 			ponto = fromstr("POINT({0} {1})".format(lat, lon))
 			queryset = Lugar.objects.filter(coordenada__distance_lte=(ponto, 5000))
-		elif request.DATA.contains_key("nome"):
+		elif "nome" in request.DATA:
 			queryset = Lugar.objects.filter(nome__icontains=request.DATA["nome"])
-		elif request.DATA.contains_key("tag"):
+		elif "tag" in request.DATA:
 			queryset = Lugar.objects.filter(tag__contains=request.DATA["tag"])
 		else:
 			return Response({"detail": "Incorrect request."})
