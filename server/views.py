@@ -15,12 +15,13 @@ from django.contrib.auth.models import User
 from rest_framework.views import APIView
 import datetime
 
+# view de logoff
 @api_view(('GET',))
 def deslogar(request, format=None):
 	logout(request)
 	return Response({"logoff": 1})
 
-
+# view para criacao e listagem de usuarios
 class CriaListaUsuario(APIView):
 	authentication_classes = (authentication.TokenAuthentication,)
 
@@ -35,6 +36,7 @@ class CriaListaUsuario(APIView):
 		login(novo_user)
 		return HttpResponse(status=200)
 
+# view para retornar o perfil do usuario
 class PerfilUsuario(generics.RetrieveUpdateDestroyAPIView):
 	queryset = User.objects.all()
 	serializer_class = UsuarioSerializer
@@ -45,6 +47,7 @@ class PerfilUsuario(generics.RetrieveUpdateDestroyAPIView):
 	def pre_save(self, obj):
 		obj.usuario = self.request.user
 
+# view da lista de notificacoes
 class ListaNotificacoes(generics.ListAPIView):
 	queryset = User.objects.all()
 	serializer_class = NotificacaoSerializer
@@ -55,6 +58,7 @@ class ListaNotificacoes(generics.ListAPIView):
 	def pre_save(self, obj):
 		obj.usuario = self.request.user
 
+# view das informacoes do lugar
 class LugarInfo(generics.RetrieveUpdateDestroyAPIView):
 	queryset = Lugar.objects.all()
 	serializer_class = LugarSerializer
@@ -64,6 +68,7 @@ class LugarInfo(generics.RetrieveUpdateDestroyAPIView):
 	def pre_save(self, obj):
 		obj.usuario = self.request.user
 
+# view da lista de lugares
 class ListaLugar(generics.ListCreateAPIView):
 	queryset = Lugar.objects.all()
 	serializer_class = LugarSerializer
@@ -72,6 +77,7 @@ class ListaLugar(generics.ListCreateAPIView):
 	def pre_save(self, obj):
 		obj.usuario = self.request.user
 
+# view da lista de comentarios para um lugar
 class ComentarioInfo(generics.ListCreateAPIView):
 	queryset = Comentario.objects.all()
 	serializer_class = NotificacaoSerializer
@@ -82,6 +88,7 @@ class ComentarioInfo(generics.ListCreateAPIView):
 	def pre_save(self, obj):
 		obj.usuario = self.request.user
 
+# busca um lugar
 class BuscaLugar(APIView):
 	authentication_classes = (authentication.TokenAuthentication,)
 
@@ -101,7 +108,7 @@ class BuscaLugar(APIView):
 		lugares = [LugarSerializer(lugar).data for lugar in queryset]
 		return Response(lugares)
 
-
+# busca um usuario
 class BuscaUsuario(APIView):
 	authentication_classes = (authentication.TokenAuthentication,)
 
@@ -109,7 +116,7 @@ class BuscaUsuario(APIView):
 		queryset = User.objects.filter(username__contains=request.DATA["username"])
 		return Response(queryset)
 
-
+# adiciona amizades
 class AdicionarAmigo(APIView):
 	authentication_classes = (authentication.TokenAuthentication,)
 

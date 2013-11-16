@@ -3,6 +3,7 @@ from rest_framework import serializers
 from server.models import *
 from django.contrib.auth.models import User
 
+# serializadores
 
 class UsuarioSerializer(serializers.ModelSerializer):
 	nome = serializers.Field(source='first_name')
